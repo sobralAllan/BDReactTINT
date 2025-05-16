@@ -43,6 +43,32 @@ export function useClienteDataBase(){
         }
     }//fim do consultar
 
-    return { create, consultar }
+    async function remove(id:number){
+        try{
+            await dataBase.execAsync("Delete from pessoa where id = " + id)
+        }catch(error){
+            throw(error)
+        }
+    }//fim do remover
 
+    async function atualizar(data: ClienteDataBase){
+        const statement = await dataBase.prepareAsync(
+            "update pessoa set nome = $nome, telefone = $telefone, endereco = $endereco where id = $id"
+        )
+
+        try{
+            await statement.executeAsync({
+                $id: data.id,
+                $nome: data.nome,
+                $telefone: data.telefone,
+                $endereco: data.endereco
+            })
+        }catch(error){
+            throw error
+        }finally{
+            await statement.finalizeAsync()
+        }
+    }//fim do atualizar
+
+    return { create, consultar, remove, atualizar }
 }//fim da função

@@ -31,6 +31,15 @@ export default function Index(){
         setEndereco(item.endereco)
     }//detalha a estrutura de consulta
 
+    async function remove(id:number){
+        try{
+            await clienteDataBase.remove(id)
+            await list()
+        }catch(error){
+            console.log(error)
+        }
+    }//fim da função remover
+
     //Para carregar a lista do banco...
     useEffect(() => {list()}, [busca])
 
@@ -38,15 +47,17 @@ export default function Index(){
         <View style={styles.container}>
             <Campo placeholder="Pesquisar" onChangeText={setBusca}/>
 
-            <FlatList 
-                data={cliente}
-                keyExtractor={(item) => String(item.id)}
-                renderItem={({item}) => <Cliente data={item}/>}
-                contentContainerStyle={{gap:16}}
-            />
+            <View style={styles.flat}>
+                <FlatList 
+                    data={cliente}
+                    keyExtractor={(item) => String(item.id)}
+                    renderItem={({item}) => <Cliente data={item} onDelete={() => remove(item.id)} onEditar={() => navigation.navigate('Atualizar', {item}) }/>}
+                    contentContainerStyle={{gap:16}}
+                />
+            </View>
 
 
-            <Button style={styles.botao} title="Voltar" onPress={() => navigation.navigate('Index')}/>
+            <Button title="Voltar" onPress={() => navigation.navigate('Index')}/>
         </View>
     );
 }
@@ -60,9 +71,11 @@ const styles = StyleSheet.create({
             alignItems: "center",
             marginTop: 25,
         },
-        botao:{
-            marginBottom: 100,
-            height: 10,
-        }
+        flat:{
+            width: "100%",
+            height: "50%",
+            padding: 10,
+            backgroundColor: "#fff",
+        },
     }   
 );
